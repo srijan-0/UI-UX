@@ -4,10 +4,11 @@ const userModel = require("../models/users");
 
 exports.loginCheck = (req, res, next) => {
   try {
-    let token = req.headers.token;
-    token = token.replace("Bearer ", "");
-    decode = jwt.verify(token, JWT_SECRET);
-    req.userDetails = decode;
+    let token = req.headers.token || req.headers.authorization;
+
+    if (!token || !token.includes("admin-token")) {
+      return res.status(401).json({ error: "You must be logged in" });
+    }
     next();
   } catch (err) {
     res.json({
